@@ -44,7 +44,7 @@ export function getAuthBearerTokenHeader() {
         ? {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + `${token}`}
-        : false;
+        : {'Content-Type': 'application/json'};
 }
 
 /**
