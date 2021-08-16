@@ -1,4 +1,4 @@
-import createView from "../createView";
+import createView from "../createView.js";
 
 export default function PostIndex(props) {
 	return `
@@ -15,28 +15,26 @@ export default function PostIndex(props) {
     </form>
     <div class="row">
         ${props.posts.map(post => `
-        <div class="post-container card col-4" data-value="${post.id}">
-            <h3>${post.title}</h3>
-            <h5>${post.content}</h5>
-            <button class="edit-btn" data-id="${id}">Edit Post</button>
-            <button class="delete-btn" data-id="${id}">Delete Post</button>
-        </div>
-        `).join('')}
+        	<div class="post-container card col-4" data-value="${post.id}">
+            	<input class="post-title" value="${post.title}"  readonly>
+            	<input class="post-content" value="${post.content}" readonly>
+            	<button class="edit-btn" data-id="${post.id}">Edit Post</button>
+            	<button class="delete-btn" data-id="${post.id}">Delete Post</button>
+        	</div>
+		`).join('')}
     </div>
-</main>`;
+</main>
+`;
 }
 
 export function PostsEvent() {
-
 	createPost();
 	editPost();
 	deletePost();
 }
 
 function createPost() {
-	let addBtn = document.getElementById("addPost");
-	addBtn.addEventListener("click", function () {
-
+	$("#addPost").on("click", function () {
 		let post = {
 			title: document.getElementById("title").value,
 			content: document.getElementById("content").value
@@ -62,72 +60,75 @@ function createPost() {
 	});
 }
 
-function editPost() {
-	let editBtn = document.getElementsByClassName("edit-btn")[`${id}`];
-	editBtn.addEventListener("click", function () {
-		let post = {
-			title: document.getElementById("edit-title")[`${id}`].value,
-			content: document.getElementById("edit-content")[`${id}`].value
-		}
+function editPost(){
+	$(".edit-btn").click(function(){
 
-		let request = {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			redirect: 'follow',
-			body: JSON.stringify(post)
-		}
+		$(".post-title, .post-content").attr("readonly", true);
+		$(this).siblings(".post-title, .post-content").attr("readonly", false);
+		$(this).text("Save");
 
-		fetch("http://localhost:8080/api/posts/${id}", request)
-			.then(res => {
-				console.log(res.status);
-				createView("/posts");
-			}).catch(error => {
-			console.log(error);
-			createView("/posts");
-		});
-	});
+		$(this).on("click", submitEditEvent)
+	})
 }
 
-function deletePost() {
-	let deleteBtn = document.getElementsByClassName("delete-btn")[`${id}`];
-	deleteBtn.addEventListener("click", function () {
-		fetch("http://localhost:8080/api/posts/${id}", {
-			method: 'DELETE',
-		}).then(res => {
+function submitEditEvent(){
+
+	let post = {
+		title: $(this).siblings(".post-title").val(),
+		content: $(this).siblings(".post-content").val()
+	}
+
+	let request = {
+		method: 'PUT',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		redirect: 'follow',
+		body: JSON.stringify(post)
+	}
+
+	let id = $(this).attr("data-id");
+
+	fetch(`http://localhost:8080/api/posts/${id}`, request)
+		.then(res => {
 			console.log(res.status);
 			createView("/posts");
 		}).catch(error => {
-			console.log(error)
-			createView("/posts");
-		});
-	});
+		console.log(error);
+		createView("/posts")
+	})
+
+	$(this).off("click", submitEditEvent)
+
 }
 
-function createPostBtn(){
-	$("#addPost").on("click", function(){
-		let post = {
-			title: document.getElementById("title").value,
-			content: document.getElementById("content").value
-		}
-
+function deletePost() {
+	$(".delete-btn").on("click", function () {
 		let request = {
-			method: 'POST',
+			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			redirect: 'follow',
-			body: JSON.stringify(post)
 		}
+		$(this).on("click", function () {
+			let id = $(this).attr("data-id");
 
-		fetch("http://localhost:8080/api/posts", request)
-			.then(res => {
-				console.log(res.status);
-				createView("/posts");
-			}).catch(error => {
-			console.log(error);
-			createView("/posts");
-		});
-	});
+			fetch(`http://localhost:8080/api/posts/${id}`, request)
+				.then(res => {
+					console.log(res.status);
+					createView("/posts");
+				}).catch(error => {
+				console.log(error);
+				createView("/posts")
+			})
+
+			$(this).off("click", fetch);
+		})
+	})
 }
+
+
+
+
+
