@@ -1,5 +1,6 @@
 package com.codeup.blogapp.web;
 
+import com.codeup.blogapp.data.Category;
 import com.codeup.blogapp.data.Post;
 import com.codeup.blogapp.data.User;
 import org.springframework.web.bind.annotation.*;
@@ -11,24 +12,33 @@ import java.util.List;
 @RequestMapping(value = "/api/posts", headers = "Accept=application/json")
 public class PostsControllers {
 
+    List<Category> categories = new ArrayList<>(){{
+        add(new Category(1l, "Spring Boot"));
+        add(new Category(2l, "Why JS Views Make my head hurt"));
+    }};
+
     @GetMapping
     private List<Post> getPosts(){
+        User blogger = new User(5l, "SuitCaseBlogger", "random@eamil.com",
+                "test1234", null);
+
         return new ArrayList<>(){{
-            User blogger = new User(5l, "SuitCaseBlogger", "random@eamil.com",
-                    "test1234", null);
-            add(new Post(1l, "a new post", "this is a brilliant post", blogger));
+
+            add(new Post(1l, "a new post", "this is a brilliant post", blogger,categories));
             add (new Post(2l, "a newer post", "Even better content than the previous" +
-                "post", blogger));
-            add(new Post(3l, "a new post", "I prefer this post", blogger));
+                "post", blogger, categories));
+            add(new Post(3l, "a new post", "I prefer this post", blogger, categories));
         }};
     }
 
     @GetMapping("{id}")
     private Post getPostById(@PathVariable Long id){
+        User postOwner = new User(4l, "lilly", "random@email.com", "test123",
+                null);
+
         if(id == 1){
-            User postOwner = new User(4l, "lilly", "random@email.com", "test123",
-                    null);
-            return new Post(1l, "a new post", "this is a brilliant post", postOwner);
+            return new Post(1l, "a new post", "this is a brilliant post", postOwner,
+                    categories);
         } else {
             return null;
         }
