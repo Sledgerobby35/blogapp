@@ -11,20 +11,38 @@ export default function PostIndex(props) {
         <input type="text" id="title">
         <label for="content">Content</label>
         <input type="text" id="content">
+        <select>
+        	${props.categories.map(category => `<option>${category.name}</option>`)}
+		</select>
         <button id="addPost" type="submit">Add Post</button>
     </form>
     <div class="row">
-        ${props.posts.map(post => `
-        	<div class="post-container card col-4" data-value="${post.id}">
-            	<input class="post-title" value="${post.title}"  readonly>
-            	<input class="post-content" value="${post.content}" readonly>
-            	<button class="edit-btn" data-id="${post.id}">Edit Post</button>
-            	<button class="delete-btn" data-id="${post.id}">Delete Post</button>
-        	</div>
-		`).join('')}
+        ${getPostsComponent(props.posts)}
     </div>
 </main>
 `;
+}
+
+function getPostsComponent(posts){
+	return posts.map(post => `
+        	<div class="post-container card col-4" data-value="${post.id}">
+        		<h4>Posted By: ${post.user.username}</h4>
+            	<input class="post-title" value="${post.title}"  readonly>
+            	<input class="post-content" value="${post.content}" readonly>
+            	
+            	<div class="categories">
+            		${getCategoriesComponent(post.categories)}
+				</div>
+            	
+            	<button class="edit-btn" data-id="${post.id}">Edit Post</button>
+            	<button class="delete-btn" data-id="${post.id}">Delete Post</button>
+        	</div>
+		`).join('');
+}
+
+function getCategoriesComponent(categories){
+
+	return categories.map(category => `<span>#${category.name}</span>`).join('');
 }
 
 export function PostsEvent() {
@@ -104,6 +122,7 @@ function submitEditEvent(){
 
 function deletePost() {
 	$(".delete-btn").on("click", function () {
+		$(this).text("Click again to delete");
 		let request = {
 			method: 'DELETE',
 			headers: {
