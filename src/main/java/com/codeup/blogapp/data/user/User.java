@@ -1,17 +1,36 @@
-package com.codeup.blogapp.data;
+package com.codeup.blogapp.data.user;
 
-import javax.management.relation.Role;
-import java.time.LocalDateTime;
+import com.codeup.blogapp.data.post.Post;
+
+import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.util.Collection;
-import java.util.Date;
 
+@Entity
+@Table(name="users")
 public class User {
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 30)
     private String username;
+
+    @Email
+    @Column(nullable = false, length = 50)
     private String email;
+
+    @Column(nullable =false, length = 50)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Role role = Role.USER;
+
+//  Will delete posts associated to deleted user
+//  Preserves integrity of data
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "posts")
     private Collection<Post> posts;
 
     public enum Role {USER, ADMIN}
@@ -28,7 +47,7 @@ public class User {
         this.posts = posts;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

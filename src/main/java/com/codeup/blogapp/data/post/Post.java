@@ -1,13 +1,35 @@
-package com.codeup.blogapp.data;
+package com.codeup.blogapp.data.post;
 
+import com.codeup.blogapp.data.category.Category;
+import com.codeup.blogapp.data.user.User;
+
+import javax.persistence.*;
 import java.util.Collection;
 
+@Entity
+@Table(name="posts")
 public class Post {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 120)
     private String title;
+
+    @Column(nullable = false)
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name="post_category",
+            joinColumns = {@JoinColumn(name="post_id")},
+            inverseJoinColumns = {@JoinColumn(name="category_id")}
+    )
     private Collection<Category> categories;
 
     public Post() {
