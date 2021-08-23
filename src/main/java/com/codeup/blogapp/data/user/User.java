@@ -1,6 +1,7 @@
 package com.codeup.blogapp.data.user;
 
 import com.codeup.blogapp.data.post.Post;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -30,7 +31,8 @@ public class User {
 
 //  Will delete posts associated to deleted user
 //  Preserves integrity of data
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "posts")
+    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "id")
+    @JsonBackReference
     private Collection<Post> posts;
 
     public enum Role {USER, ADMIN}
@@ -78,14 +80,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-
-//    public Date getCreatedAt() {
-//        return createdAt;
-//    }
-
-//    public void setCreatedAt(Date createdAt) {
-//        this.createdAt = createdAt;
-//    }
 
     public Role getRole() {
         return role;
