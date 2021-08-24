@@ -4,6 +4,7 @@ import com.codeup.blogapp.data.category.Category;
 import com.codeup.blogapp.data.user.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -24,16 +25,20 @@ public class Post {
     private String content;
 
     @ManyToOne
-    @JsonManagedReference
-    @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"posts", "password"})
     private User user;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JsonIgnore
+    @ManyToMany(
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},
+            targetEntity = Category.class
+    )
     @JoinTable(
             name="post_category",
-            joinColumns = {@JoinColumn(name="post_id")},
-            inverseJoinColumns = {@JoinColumn(name="category_id")}
+            joinColumns = {@JoinColumn(name = "post_id", nullable = false, updatable = false)},
+            inverseJoinColumns = {@JoinColumn(name="category_id", nullable = false, updatable = false)},
+            foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT),
+            inverseForeignKey = @ForeignKey(ConstraintMode.CONSTRAINT)
     )
     private Collection<Category> categories;
 

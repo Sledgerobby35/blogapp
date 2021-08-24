@@ -1,8 +1,7 @@
 package com.codeup.blogapp.data.user;
 
 import com.codeup.blogapp.data.post.Post;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import java.util.Collection;
@@ -29,10 +28,8 @@ public class User {
     @Column(nullable = false)
     private Role role = Role.USER;
 
-//  Will delete posts associated to deleted user
-//  Preserves integrity of data
-    @OneToMany(cascade = CascadeType.REMOVE, mappedBy = "id")
-    @JsonBackReference
+    @OneToMany(mappedBy = "user")
+    @JsonIgnoreProperties("user")
     private Collection<Post> posts;
 
     public enum Role {USER, ADMIN}
