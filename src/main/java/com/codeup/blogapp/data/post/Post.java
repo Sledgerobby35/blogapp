@@ -30,7 +30,8 @@ public class Post {
 
     @ManyToMany(
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH},
+            cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH,
+                    Ca},
             targetEntity = Category.class
     )
     @JoinTable(
