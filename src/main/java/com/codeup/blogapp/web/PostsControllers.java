@@ -21,7 +21,8 @@ public class PostsControllers {
 
     @GetMapping
     private List<Post> getPosts(){
-       return postsRepository.findAll();
+        System.out.println(postsRepository.findAll());
+        return postsRepository.findAll();
     }
 
     @GetMapping("{id}")
