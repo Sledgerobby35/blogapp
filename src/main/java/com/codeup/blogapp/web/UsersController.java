@@ -3,6 +3,7 @@ package com.codeup.blogapp.web;
 
 import com.codeup.blogapp.data.user.User;
 import com.codeup.blogapp.data.user.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,12 +33,10 @@ public class UsersController {
         return userRepository.getById(id);
     }
 
-    @PostMapping("/create")
-    private void postUser(@RequestBody User user){
+    @PostMapping
+    @PreAuthorize("!hasAuthority('USER')")
+    private void createUser(@RequestBody User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        System.out.println(user.getEmail());
-        System.out.println(user.getUsername());
-        System.out.println(user.getPassword());
         userRepository.save(user);
     }
 
