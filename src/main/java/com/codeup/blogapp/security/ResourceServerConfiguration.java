@@ -30,17 +30,17 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     public void configure(HttpSecurity http) throws Exception {
         http
                 .formLogin()
-                .disable()
+                    .disable()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
                 .authorizeRequests()
-                .antMatchers("/api/users").hasAnyAuthority("ADMIN", "USER")
-                .antMatchers("/v3/api-docs/**").hasAnyAuthority("ADMIN", "USER")
-                .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .antMatchers("/api/users/create").permitAll()
-                .antMatchers("/**").permitAll()
-                .anyRequest().authenticated()
+                    .antMatchers("/api/users").hasAnyAuthority("ADMIN", "USER")
+                    .antMatchers("/v3/api-docs/**").hasAnyAuthority("ADMIN", "USER")
+                    .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .antMatchers("/api/users/create").permitAll()
+                    .antMatchers("/**").permitAll()
+                    .anyRequest().authenticated()
             .and()
                 .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint).accessDeniedHandler(new CustomAccessDeniedHandler());
     }
