@@ -2,7 +2,10 @@ package com.codeup.blogapp.web;
 
 import com.codeup.blogapp.data.post.Post;
 import com.codeup.blogapp.data.post.PostsRepository;
+import com.codeup.blogapp.data.user.User;
+import com.codeup.blogapp.data.user.UserRepository;
 import com.codeup.blogapp.services.EmailService;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,10 +16,13 @@ public class PostsControllers {
 
     private final EmailService emailService;
     private final PostsRepository postsRepository;
+    private final UserRepository userRepository;
 
-    public PostsControllers(EmailService emailService, PostsRepository postsRepository){
+    public PostsControllers(EmailService emailService,
+                            PostsRepository postsRepository, UserRepository userRepository){
         this.emailService = emailService;
         this.postsRepository = postsRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping
@@ -31,12 +37,12 @@ public class PostsControllers {
     }
 
     @PostMapping
-    private void createPost(@RequestBody Post newPost){
-        System.out.println(newPost.getId());
-        System.out.println(newPost.getTitle());
-        System.out.println(newPost.getContent());
+    private void create(@RequestBody Post newPost, OAuth2Authentication auth){
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email).get();
+        newPost.setUser(user);
         postsRepository.save(newPost);
-        emailService.prepareAndSend(newPost, "First Email Test", "Whats Good Peeps");
+//        emailService.prepareAndSend(newPost, "First Email Test", "Whats Good Peeps");
     }
 
     @PutMapping("{id}")
